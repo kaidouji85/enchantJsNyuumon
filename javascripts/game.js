@@ -13,6 +13,7 @@ var PLAYER_SPEED = 4;
 var ENEMY_SPEED = 3;
 var playerSprite;
 var enemySprite;
+var gameOverLabel;
 
 window.onload = function() {
     initCore();
@@ -26,7 +27,15 @@ window.onload = function() {
         //敵
         enemySprite = defineEnemy();
         core.rootScene.addChild(enemySprite);
+
+        //ゲームオーバラベル
+        gameOverLabel = defineGameOverLabel();
+        core.rootScene.addChild(gameOverLabel);
+
+        //リフレッシュレート処理
+        core.addEventListener(Event.ENTER_FRAME,enterFrameByCore);
     };
+
     core.start();
 };
 
@@ -65,10 +74,9 @@ function definePlayerSprite(){
         }
         if(player.y<0){
             player.y = 0;
-        } else if(player.y > GAME_HEIGHT-PLAYER_HEIGHT){
-            player.y = GAME_HEIGHT-PLAYER_HEIGHT;
+        } else if(player.y > GAME_HEIGHT-PLAYER_HEIGHT) {
+            player.y = GAME_HEIGHT - PLAYER_HEIGHT;
         }
-
     });
     player.x = (GAME_WIDTH-PLAYER_WIDTH)/2;
     player.y = GAME_HEIGHT/2;
@@ -109,4 +117,20 @@ function defineEnemy(){
         }
     });
     return enemy;
+}
+
+function defineGameOverLabel(){
+    var gameOver = new Label("GameOver");
+    gameOver.x = 130;
+    gameOver.y = 100;
+    gameOver.color = 'white';
+    gameOver.visible = false;
+    return gameOver;
+}
+
+function enterFrameByCore(e){
+    if(playerSprite.intersect(enemySprite)){
+        playerSprite.visible = false;
+        gameOverLabel.visible = true;
+    }
 }
