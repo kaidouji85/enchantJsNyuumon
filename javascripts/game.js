@@ -5,17 +5,27 @@ var GAME_WIDTH = 320;
 var GAME_HEIGHT = 320;
 var PLAYER_WIDTH = 64;
 var PLAYER_HEIGHT = 64;
+var ENEMY_WIDTH = 64;
+var ENEMY_HEIGHT = 64;
 var PLAYER_PICT = "images/jiki.png";
+var ENEMY_PICT = "images/enemy.png";
 var PLAYER_SPEED = 4;
+var ENEMY_SPEED = 3;
 var playerSprite;
+var enemySprite;
 
 window.onload = function() {
     initCore();
     preLoad();
 
     core.onload = function() {
+        //自機
         playerSprite = definePlayerSprite();
         core.rootScene.addChild(playerSprite);
+
+        //敵
+        enemySprite = defineEnemy();
+        core.rootScene.addChild(enemySprite);
     };
     core.start();
 };
@@ -28,6 +38,7 @@ function initCore(){
 
 function preLoad(){
     core.preload(PLAYER_PICT);
+    core.preload(ENEMY_PICT);
 }
 
 function definePlayerSprite(){
@@ -59,7 +70,43 @@ function definePlayerSprite(){
         }
 
     });
-    player.x = GAME_WIDTH/2;
+    player.x = (GAME_WIDTH-PLAYER_WIDTH)/2;
     player.y = GAME_HEIGHT/2;
     return player;
+}
+
+function defineEnemy(){
+    var enemy = new Sprite(ENEMY_WIDTH,ENEMY_HEIGHT);
+    enemy.image = core.assets[ENEMY_PICT];
+    enemy.x = (GAME_WIDTH-ENEMY_WIDTH)/2;
+    enemy.y = 0;
+
+    var rad = Math.random()*360*Math.PI/180;
+    enemy.dx = Math.cos(rad)*ENEMY_SPEED;
+    enemy.dy = Math.sin(rad)*ENEMY_SPEED;
+
+    enemy.addEventListener(Event.ENTER_FRAME,function(e){
+        enemy.x += enemy.dx;
+        enemy.y += enemy.dy;
+
+
+        if(enemy.x < 0){
+            enemy.x = 0;
+            enemy.dx = -enemy.dx;
+        }
+        else if(enemy.x > GAME_WIDTH-ENEMY_WIDTH){
+            enemy.x = GAME_WIDTH-ENEMY_WIDTH;
+            enemy.dx = -enemy.dx;
+        }
+
+        if(enemy.y < 0){
+            enemy.y = 0;
+            enemy.dy = -enemy.dy;
+        }
+        else if(enemy.y > GAME_HEIGHT-ENEMY_HEIGHT){
+            enemy.y = GAME_HEIGHT-ENEMY_HEIGHT;
+            enemy.dy = -enemy.dy;
+        }
+    });
+    return enemy;
 }
